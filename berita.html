@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ berita.judul }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>{{ berita.judul }}</h1>
+        <nav>
+            <a href="{{ url_for('index') }}">Beranda</a>
+            {% if 'user_id' in session %}
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <article class="berita-detail">
+            <p class="kategori">{{ berita.kategori }}</p>
+            <p class="waktu">{{ berita.waktu.strftime('%d %B %Y, %H:%M') }}</p>
+            <p class="isi">{{ berita.isi }}</p>
+            <a href="{{ url_for('like_berita', berita_id=berita.id) }}" class="like">Sukai</a>
+        </article>
+
+        <section class="komentar">
+            <h2>Komentar</h2>
+            <form action="{{ url_for('tambah_komentar', berita_id=berita.id) }}" method="POST">
+                <textarea name="isi" required></textarea>
+                <button type="submit">Kirim Komentar</button>
+            </form>
+
+            <div class="komentar-list">
+                {% for komentar in komentar %}
+                    <div class="komentar-item">
+                        <p class="isi">{{ komentar.isi }}</p>
+                        <p class="waktu">{{ komentar.waktu.strftime('%d %B %Y, %H:%M') }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Berita Terkini</p>
+    </footer>
+</body>
+</html>
